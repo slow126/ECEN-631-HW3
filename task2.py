@@ -96,9 +96,13 @@ def process_list(PATH, imgList, camera):
     # ret, left_mtx_out, left_dist_out, right_mtx_out, right_dist_out, R, T, E, F = cv2.stereoCalibrate(obj_vect, left_img_vect, right_img_vect, true_left_mtx, true_left_dist, true_right_mtx, true_right_dist, (y, x), flags=cv2.CALIB_FIX_INTRINSIC)
     np.save("fundamental.npy", F)
     print(R)
+    np.save("R.npy", R)
     print(T)
+    np.save("T.npy", T)
     print(E)
+    np.save("E.npy", E)
     print(F)
+    np.save("F.npy", F)
 
 
 process_list(STEREO_PATH, stereoList, "stereo")

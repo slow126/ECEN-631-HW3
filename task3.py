@@ -18,6 +18,7 @@ fund_mtx = np.load("fundamental.npy")
 
 PATH = "my_images"
 EPI_PATH = os.path.join(PATH, "Epipolar_Images")
+# EPI_PATH = os.path.join(PATH, "Rectified Stereo Images")
 epiList = os.listdir(EPI_PATH)
 epiList.sort()
 
@@ -32,8 +33,7 @@ def plot_lines(param, img):
 
 
 for file in epiList:
-    img = cv2.imread(os.path.join(PATH, file))
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    img = cv2.imread(os.path.join(EPI_PATH, file))
     pattern = (10, 7)
     if "L" in file:
         left_img = img
@@ -73,10 +73,10 @@ for i in [30, 40, 50]:
     y1, x1, y2, x2 = plot_lines(right_lines[i], right)
     cv2.line(left, (x1,y1), (x2,y2), [255, 0, 255], thickness=2)
 
-# cv2.line(right_img, right_lines, 3, [255, 0, 255])
-
 cv2.imshow("left", left)
+cv2.imwrite("undistort_epipoles_left.png", left)
 cv2.waitKey()
 cv2.imshow("right", right)
+cv2.imwrite("undistort_epipoles_right.png", right)
 cv2.waitKey()
 cv2.destroyAllWindows()
