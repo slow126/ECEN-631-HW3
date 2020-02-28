@@ -16,7 +16,8 @@ fund_mtx = np.load("fundamental.npy")
 #   [-0.0000637634,   -0.0000110764 ,   0.6702695146],
 #    [0.0504789932 ,  -0.6677701976 ,   1.0000000000]])
 
-PATH = "my_images"
+PATH = "practice_images"
+# PATH = "my_images"
 EPI_PATH = os.path.join(PATH, "Epipolar_Images")
 # EPI_PATH = os.path.join(PATH, "Rectified Stereo Images")
 epiList = os.listdir(EPI_PATH)

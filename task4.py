@@ -22,13 +22,14 @@ T = np.load("T.npy")
 E = np.load("E.npy")
 F = np.load("F.npy")
 
-PATH = "my_images"
+PATH = "practice_images"
+# PATH = "my_images"
 if PATH == "practice_images":
     scale = 2
 else:
     scale = 3.88
 
-STEREO_PATH = os.path.join(PATH, "Unectified Stereo Images")
+STEREO_PATH = os.path.join(PATH, "Unrectified Stereo Images")
 stereoList = os.listdir(STEREO_PATH)
 stereoList.sort()
 pattern = (10, 7)
@@ -37,7 +38,7 @@ for file in stereoList:
     img = cv2.imread(os.path.join(STEREO_PATH, file))
     h, w = img.shape[:2]
     newcameramtx, roi = cv2.getOptimalNewCameraMatrix(left_mtx, left_dist, (w, h), 1, (w, h))
-    img = cv2.undistort(img, left_mtx, left_dist, None, newcameramtx)
+    # img = cv2.undistort(img, left_mtx, left_dist, None, newcameramtx)
     if "L" in file:
         left = img
         old_left = img
@@ -46,6 +47,41 @@ for file in stereoList:
         right = cv2.imread(os.path.join(STEREO_PATH, file))
         old_right = img
 
+
+ret, left_corners = cv2.findChessboardCorners(left, pattern)
+criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.001)
+left_sub_corners = cv2.cornerSubPix(cv2.cvtColor(left, cv2.COLOR_RGB2GRAY), np.float32(left_corners), (5, 5),
+                                            (-1, -1), criteria)
+
+ret, right_corners = cv2.findChessboardCorners(right, pattern)
+criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.001)
+right_sub_corners = cv2.cornerSubPix(cv2.cvtColor(right, cv2.COLOR_RGB2GRAY), np.float32(right_corners), (5, 5),
+                                             (-1, -1), criteria)
+
+left_pts = left_sub_corners
+right_pts = right_sub_corners
+left_lines = cv2.computeCorrespondEpilines(right_pts, 2, F)
+right_lines = cv2.computeCorrespondEpilines(left_pts, 1, F)
+
+for i in [0,10,20]:
+    point = left_pts[i].astype(int)
+    cv2.circle(left, (point[0, 0], point[0, 1]), 2, [255, 255, 0], thickness=-1)
+    y1, x1, y2, x2 = plot_lines(left_lines[i], left)
+    cv2.line(right, (x1, y1), (x2, y2), [0,255,255], thickness=2)
+
+for i in [30, 40, 50]:
+    point = right_pts[i].astype(int)
+    cv2.circle(right, (point[0, 0], point[0, 1]), 2, [255, 255, 0], thickness=-1)
+    y1, x1, y2, x2 = plot_lines(right_lines[i], right)
+    cv2.line(left, (x1,y1), (x2,y2), [255, 0, 255], thickness=2)
+
+cv2.imshow("left", left)
+cv2.imwrite("rectified_epipoles_left.png", left)
+cv2.waitKey()
+cv2.imshow("right", right)
+cv2.imwrite("rectified_epipoles_right.png", right)
+cv2.waitKey()
+cv2.destroyAllWindows()
 
 y, x, z = left.shape
 R1, R2, P1, P2, Q, SIZE1, SIZE2 = cv2.stereoRectify(left_mtx, left_dist, right_mtx, right_dist, (x,y), R, T)
@@ -70,33 +106,6 @@ right_diff = cv2.absdiff(old_right, right_undisort)
 cv2.imshow("Right Diff", right_diff)
 cv2.imwrite("Rectified_Right_diff.png", right_diff)
 cv2.waitKey()
-
-ret, left_corners = cv2.findChessboardCorners(left_undist, pattern)
-criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.001)
-left_sub_corners = cv2.cornerSubPix(cv2.cvtColor(left_undist, cv2.COLOR_RGB2GRAY), np.float32(left_corners), (5, 5),
-                                            (-1, -1), criteria)
-
-ret, right_corners = cv2.findChessboardCorners(right_undisort, pattern)
-criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.001)
-right_sub_corners = cv2.cornerSubPix(cv2.cvtColor(right_undisort, cv2.COLOR_RGB2GRAY), np.float32(right_corners), (5, 5),
-                                             (-1, -1), criteria)
-
-left_pts = left_sub_corners
-right_pts = right_sub_corners
-left_lines = cv2.computeCorrespondEpilines(right_pts, 2, F)
-right_lines = cv2.computeCorrespondEpilines(left_pts, 1, F)
-
-for i in [0,10,20]:
-    point = left_pts[i].astype(int)
-    cv2.circle(left_undist, (point[0, 0], point[0, 1]), 2, [255, 255, 0], thickness=-1)
-    y1, x1, y2, x2 = plot_lines(left_lines[i], left_undist)
-    cv2.line(right_undisort, (x1, y1), (x2, y2), [0,255,255], thickness=2)
-
-for i in [30, 40, 50]:
-    point = right_pts[i].astype(int)
-    cv2.circle(right_undisort, (point[0, 0], point[0, 1]), 2, [255, 255, 0], thickness=-1)
-    y1, x1, y2, x2 = plot_lines(right_lines[i], right_undisort)
-    cv2.line(left_undist, (x1,y1), (x2,y2), [255, 0, 255], thickness=2)
 
 cv2.imshow("left", left_undist)
 cv2.imwrite("rectified_epipoles_left.png", left_undist)

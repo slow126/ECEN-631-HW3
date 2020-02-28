@@ -4,7 +4,8 @@ import PIL
 import numpy as np
 
 
-PATH = "my_images"
+PATH = "practice_images"
+# PATH = "my_images"
 if PATH == "practice_images":
     scale = 2
 else:
