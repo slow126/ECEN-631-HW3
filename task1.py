@@ -4,8 +4,8 @@ import PIL
 import numpy as np
 
 
-PATH = "practice_images"
-# PATH = "my_images"
+# PATH = "practice_images"
+PATH = "my_images"
 if PATH == "practice_images":
     scale = 2
 else:
@@ -77,10 +77,14 @@ def process_list(PATH, imgList, camera):
     np.save(camera + "-dist.npy", dist)
     np.save(camera + "-rvecs.npy", rvecs)
     np.save(camera + "-tvecs.npy", tvecs)
+    print(camera + " mtx")
+    print(mtx)
+    print(camera + " dist")
+    print(dist)
 
     h, w = img.shape[:2]
     newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
-    print(roi)
+    # print(roi)
     dst = cv2.undistort(img, mtx, dist, None, newcameramtx)
     x, y, w, h = roi
     ann = annotated_img

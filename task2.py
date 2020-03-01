@@ -25,8 +25,8 @@ true_right_dist = np.array([  -0.2950621013,
   -0.0014052463,
   -9.9589684633])
 
-PATH = "practice_images"
-# PATH = "my_images"
+# PATH = "practice_images"
+PATH = "my_images"
 if PATH == "practice_images":
     scale = 2
 else:

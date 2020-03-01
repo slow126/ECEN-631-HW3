@@ -16,8 +16,8 @@ fund_mtx = np.load("fundamental.npy")
 #   [-0.0000637634,   -0.0000110764 ,   0.6702695146],
 #    [0.0504789932 ,  -0.6677701976 ,   1.0000000000]])
 
-PATH = "practice_images"
-# PATH = "my_images"
+# PATH = "practice_images"
+PATH = "my_images"
 EPI_PATH = os.path.join(PATH, "Epipolar_Images")
 # EPI_PATH = os.path.join(PATH, "Rectified Stereo Images")
 epiList = os.listdir(EPI_PATH)
@@ -64,20 +64,20 @@ right_lines = cv2.computeCorrespondEpilines(left_pts, 1, fund_mtx)
 
 for i in [0,10,20]:
     point = left_pts[i].astype(int)
-    cv2.circle(left, (point[0, 0], point[0, 1]), 2, [255, 255, 0], thickness=-1)
+    cv2.circle(left, (point[0, 0], point[0, 1]), 4, [0, 255, 255], thickness=-1)
     y1, x1, y2, x2 = plot_lines(left_lines[i], left)
     cv2.line(right, (x1, y1), (x2, y2), [0,255,255], thickness=2)
 
 for i in [30, 40, 50]:
     point = right_pts[i].astype(int)
-    cv2.circle(right, (point[0, 0], point[0, 1]), 2, [255, 255, 0], thickness=-1)
+    cv2.circle(right, (point[0, 0], point[0, 1]), 4, [255, 0, 255], thickness=-1)
     y1, x1, y2, x2 = plot_lines(right_lines[i], right)
     cv2.line(left, (x1,y1), (x2,y2), [255, 0, 255], thickness=2)
 
 cv2.imshow("left", left)
-cv2.imwrite("undistort_epipoles_left.png", left)
+cv2.imwrite("task3_left.png", left)
 cv2.waitKey()
 cv2.imshow("right", right)
-cv2.imwrite("undistort_epipoles_right.png", right)
+cv2.imwrite("task3_right.png", right)
 cv2.waitKey()
 cv2.destroyAllWindows()
